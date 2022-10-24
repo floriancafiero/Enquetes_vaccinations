@@ -641,5 +641,398 @@ reg_tresdef_2016 <- glm(barometre2016$Tres_defavorable ~ barometre2016$dip5_rec 
 forest_model(reg_tresdef_2016, recalculate_width= TRUE)
 ```
 
+## Pour 2014
+
+### Pro-anti
+
+#### Recodages
+
+On recode la variable va1 en une variable binaire: 1 = provaccin ; 0 = antivaccin. On affiche le tableau des fréquences de la nouvelle variable.
+
+```{r recodage pro anti 2014, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recodage de barometre2014$va1 en barometre2014$va1_rec
+barometre2014$va1_rec <- barometre2014$va1 %>%
+  as.character() %>%
+  fct_recode(
+    "1" = "2",
+    "0" = "3",
+    "0" = "4",
+    NULL = "5"
+  )
+freq(barometre2014$va1_rec)
+```
+
+On recode le diplome:
+
+```{r recodage diplome 2014, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recodage de barometre2014$diplome en barometre2014$diplome_rec
+barometre2014$diplome_rec <- barometre2014$rs_diplome %>%
+  as.character() %>%
+  fct_recode(
+    "Sans diplome" = "1",
+    "Inferieur bac" = "2",
+    "Bac ou equivalent" = "3",
+    "Bac +2" = "4",
+    "Bac +3/4" = "5",
+    "Bac +5 ou plus" = "6"
+  )
+freq(barometre2014$diplome_rec)
+```
+
+On recode la categorie d'agglomération:
+
+```{r recodage cat_agg 2014, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recodage de barometre2014$cat_agg6 en barometre2014$cat_agg6_rec
+barometre2014$cat_agg6_rec <- barometre2014$cat_agg6 %>%
+  as.character() %>%
+  fct_recode(
+    "Rural" = "1",
+    "<20.000" = "2",
+    "20 - 99.999" = "3",
+    "100.000 - 199.999" = "4",
+    ">=200.000" = "5",
+    "Agglomération parisienne" = "6"
+  )
+freq(barometre2014$cat_agg6_rec)
+```
+
+On recode les catégories croisées de sexe et d'âge:
+
+```{r recodage sexage 2014, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recodage de barometre2014$sexage en barometre2014$sexage_rec
+barometre2014$sexage_rec <- barometre2014$sexage %>%
+  as.character() %>%
+  fct_recode(
+    "Hommes 18-24 ans" = "1",
+    "Hommes 25-34 ans" = "2",
+    "Hommes 35-44 ans" = "3",
+    "Hommes 45-54 ans" = "4",
+    "Hommes 55-64 ans" = "5",
+    "Hommes 65-74 ans" = "6",
+    "Hommes 75-85 ans" = "7",
+    "Femmes 18-24 ans" = "8",
+    "Femmes 25-34 ans" = "9",
+    "Femmes 35-44 ans" = "10",
+    "Femmes 45-54 ans" = "11",
+    "Femmes 55-64 ans" = "12",
+    "Femmes 65-74 ans" = "13",
+    "Femmes 75-85 ans" = "14"
+  )
+freq(barometre2014$sexage_rec)
+```
+
+
+On recode les catégories de revenu:
+
+```{r recodage revenus 2014, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recodage de barometre2014$sexage en barometre2014$sexage_rec
+## Recodage de barometre2014$rev_3K en barometre2014$rev_3K_rec
+## Recodage de barometre2014$rev_3K en barometre2014$rev_3K_rec
+barometre2014$rev_3K_rec <- barometre2014$rev_3K %>%
+  as.character() %>%
+  fct_recode(
+    "1er tercile" = "1",
+    "2ème tercile" = "2",
+    "3ème tercile" = "3",
+    NULL = "99"
+  )
+freq(barometre2014$rev_3K_rec)
+```
+
+#### Calcul de la régression
+
+```{r régressions pro anti 2014, echo=FALSE}
+library(GGally)
+library(forestmodel)
+reg_proanti_2014 <- glm(barometre2014$va1_rec ~ barometre2014$diplome_rec + barometre2014$sexage_rec + barometre2014$cat_agg6_rec + barometre2014$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2014, exponentiate = TRUE)
+forest_model(reg_proanti_2014, recalculate_width= TRUE)
+
+```
+
+#### Recodage
+
+
+Très défavorable aux vaccins = 1 ; 0 sinon.
+```{r recodage très anti vs reste 2014, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recodage de barometre2014$va1 en barometre2014$Tres_defavorable
+barometre2014$Tres_defavorable <- barometre2014$va1 %>%
+  as.character() %>%
+  fct_recode(
+    "0" = "1",
+    "0" = "2",
+    "0" = "3",
+    "1" = "4",
+    NULL = "5"
+  )
+freq(barometre2014$Tres_defavorable)
+```
+
+#### Régression
+
+```{r régressions tresdef 2014, echo=FALSE}
+library(GGally)
+library(forestmodel)
+reg_tresdef_2014 <- glm(barometre2014$Tres_defavorable ~ barometre2014$diplome_rec + barometre2014$sexage_rec + barometre2014$cat_agg6_rec + barometre2014$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2014, exponentiate = TRUE)
+forest_model(reg_tresdef_2014, recalculate_width= TRUE)
+```
+
+## Pour 2010
+
+### Pro-anti
+
+#### Recodages
+
+On recode la variable va1 en une variable binaire: 1 = provaccin ; 0 = antivaccin. On affiche le tableau des fréquences de la nouvelle variable.
+
+```{r recodage pro anti 2010, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recodage de barometre2010$va1 en barometre2010$va1_rec
+barometre2010$va1_rec <- barometre2010$VA1 %>%
+  as.character() %>%
+  fct_recode(
+    "1" = "2",
+    "0" = "3",
+    "0" = "4",
+    NULL = "5"
+  )
+freq(barometre2010$va1_rec)
+```
+
+On recode le diplome:
+
+
+```{r recodage diplome 2010, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recodage de barometre2010$diplome en barometre2010$diplome_rec
+barometre2010$diplome_rec <- barometre2010$RS_DIPLOME %>%
+  as.character() %>%
+  fct_recode(
+    "Sans diplome" = "1",
+    "Inferieur bac" = "2",
+    "Bac ou equivalent" = "3",
+    "Bac +2" = "4",
+    "Bac +3/4" = "5",
+    "Bac +5 ou plus" = "6"
+  )
+freq(barometre2010$diplome_rec)
+```
+
+On recode la categorie d'agglomération:
+
+
+
+```{r recodage cat_agg 2010, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recodage de barometre2010$cat_agg6 en barometre2010$cat_agg6_rec
+barometre2010$cat_agg6_rec <- barometre2010$RS_AGGLO6R %>%
+  as.character() %>%
+  fct_recode(
+    "Rural" = "1",
+    "<20.000" = "2",
+    "20 - 99.999" = "3",
+    "100.000 - 199.999" = "4",
+    ">=200.000" = "5",
+    "Agglomération parisienne" = "6"
+  )
+freq(barometre2010$cat_agg6_rec)
+```
+
+On recode les catégories croisées de sexe et d'âge. La variable n'étant pas nativement dans la base de données, on la crée depuis les deux variables séparées RS_SEXE et RS2  .
+
+Autre: 15-18 ans
+
+```{r recodage sexage 2010, echo=FALSE}
+library(forcats)
+library(questionr)
+library(dplyr)
+## Recodage de barometre2010$RS2 en barometre2010$RS2_rec
+barometre2010$RS2_rec <- barometre2010$RS2 %>%
+  as.character() %>%
+  fct_recode(
+    NULL = "15",
+    NULL = "16",
+    NULL = "17",
+    "18 - 24 ans" = "18",
+    "18 - 24 ans" = "19",
+    "18 - 24 ans" = "20",
+    "18 - 24 ans" = "21",
+    "18 - 24 ans" = "22",
+    "18 - 24 ans" = "23",
+    "18 - 24 ans" = "24",
+    "25 -34 ans" = "25",
+    "25 -34 ans" = "26",
+    "25 -34 ans" = "27",
+    "25 -34 ans" = "28",
+    "25 -34 ans" = "29",
+    "25 -34 ans" = "30",
+    "25 -34 ans" = "31",
+    "25 -34 ans" = "32",
+    "25 -34 ans" = "33",
+    "25 -34 ans" = "34",
+    "35 - 44 ans" = "35",
+    "35 - 44 ans" = "36",
+    "35 - 44 ans" = "37",
+    "35 - 44 ans" = "38",
+    "35 - 44 ans" = "39",
+    "35 - 44 ans" = "40",
+    "35 - 44 ans" = "41",
+    "35 - 44 ans" = "42",
+    "35 - 44 ans" = "43",
+    "35 - 44 ans" = "44",
+    "45 - 54 ans" = "45",
+    "45 - 54 ans" = "46",
+    "45 - 54 ans" = "47",
+    "45 - 54 ans" = "48",
+    "45 - 54 ans" = "49",
+    "45 - 54 ans" = "50",
+    "45 - 54 ans" = "51",
+    "45 - 54 ans" = "52",
+    "45 - 54 ans" = "53",
+    "45 - 54 ans" = "54",
+    "55 -64 ans" = "55",
+    "55 -64 ans" = "56",
+    "55 -64 ans" = "57",
+    "55 -64 ans" = "58",
+    "55 -64 ans" = "59",
+    "55 -64 ans" = "60",
+    "55 -64 ans" = "61",
+    "55 -64 ans" = "62",
+    "55 -64 ans" = "63",
+    "55 -64 ans" = "64",
+    "65 -74 ans" = "65",
+    "65 -74 ans" = "66",
+    "65 -74 ans" = "67",
+    "65 -74 ans" = "68",
+    "65 -74 ans" = "69",
+    "65 -74 ans" = "70",
+    "65 -74 ans" = "71",
+    "65 -74 ans" = "72",
+    "65 -74 ans" = "73",
+    "65 -74 ans" = "74",
+    "75 -85 ans" = "75",
+    "75 -85 ans" = "76",
+    "75 -85 ans" = "77",
+    "75 -85 ans" = "78",
+    "75 -85 ans" = "79",
+    "75 -85 ans" = "80",
+    "75 -85 ans" = "81",
+    "75 -85 ans" = "82",
+    "75 -85 ans" = "83",
+    "75 -85 ans" = "84",
+    "75 -85 ans" = "85"
+  )
+
+freq(barometre2010$RS2_rec)
+
+## Recodage de barometre2010$RS_SEXE en barometre2010$RS_SEXE_rec
+barometre2010$RS_SEXE_rec <- barometre2010$RS_SEXE %>%
+  as.character() %>%
+  fct_recode(
+    "Homme" = "1",
+    "Femme" = "2"
+  )
+
+## Interaction des deux variables
+
+barometre2010$sexage_rec <- case_when(
+  barometre2010$RS2_rec == "18 - 24 ans" & barometre2010$RS_SEXE_rec == "Femme" ~ "Femme 18-24 ans",
+  barometre2010$RS2_rec == "25 -34 ans" & barometre2010$RS_SEXE_rec == "Femme" ~ "Femme 25-34 ans",
+  barometre2010$RS2_rec == "35 - 44 ans"& barometre2010$RS_SEXE_rec == "Femme" ~ "Femme 35-44 ans",
+  barometre2010$RS2_rec == "45 - 54 ans" & barometre2010$RS_SEXE_rec == "Femme" ~ "Femme 45-54 ans",
+  barometre2010$RS2_rec == "55 -64 ans" & barometre2010$RS_SEXE_rec == "Femme" ~ "Femme 55-64 ans",
+  barometre2010$RS2_rec ==  "65 -74 ans" & barometre2010$RS_SEXE_rec == "Femme" ~ "Femme 65-74 ans",
+  barometre2010$RS2_rec ==  "75 -85 ans" & barometre2010$RS_SEXE_rec == "Femme" ~ "Femme 75-85 ans",
+  barometre2010$RS2_rec == "18 - 24 ans" & barometre2010$RS_SEXE_rec == "Homme" ~ "Homme 18-24 ans",
+  barometre2010$RS2_rec == "25 -34 ans" & barometre2010$RS_SEXE_rec == "Homme" ~ "Homme 25-34 ans",
+  barometre2010$RS2_rec == "35 - 44 ans"& barometre2010$RS_SEXE_rec == "Homme" ~ "Homme 35-44 ans",
+  barometre2010$RS2_rec == "45 - 54 ans" & barometre2010$RS_SEXE_rec == "Homme" ~ "Homme 45-54 ans",
+  barometre2010$RS2_rec == "55 -64 ans" & barometre2010$RS_SEXE_rec == "Homme" ~ "Homme 55-64 ans",
+  barometre2010$RS2_rec ==  "65 -74 ans" & barometre2010$RS_SEXE_rec == "Homme" ~ "Homme 65-74 ans",
+  barometre2010$RS2_rec ==  "75 -85 ans" & barometre2010$RS_SEXE_rec == "Homme" ~ "Homme 75-85 ans",
+)
+
+freq(barometre2010$sexage)
+
+```
+
+
+On recode les catégories de revenu:
+
+
+```{r recodage revenus 2010, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recodage de barometre2010$rev_3K en barometre2010$rev_3K_rec
+barometre2010$rev_3K_rec <- barometre2010$RS_REVENU_UCB %>%
+  as.character() %>%
+  fct_recode(
+    "1er tercile" = "1",
+    "2ème tercile" = "2",
+    "3ème tercile" = "3",
+    NULL = "99"
+  )
+freq(barometre2010$rev_3K_rec)
+```
+
+#### Calcul de la régression
+
+```{r régressions pro anti 2010, echo=FALSE}
+library(GGally)
+library(forestmodel)
+reg_proanti_2010 <- glm(barometre2010$va1_rec ~ barometre2010$diplome_rec + barometre2010$sexage_rec + barometre2010$cat_agg6_rec + barometre2010$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2010, exponentiate = TRUE)
+forest_model(reg_proanti_2010, recalculate_width= TRUE)
+
+```
+
+#### Recodage
+
+
+Très défavorable aux vaccins = 1 ; 0 sinon.
+```{r recodage très anti vs reste 2010, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recodage de barometre2010$va1 en barometre2010$Tres_defavorable
+barometre2010$Tres_defavorable <- barometre2010$VA1 %>%
+  as.character() %>%
+  fct_recode(
+    "0" = "1",
+    "0" = "2",
+    "0" = "3",
+    "1" = "4",
+    NULL = "5"
+  )
+freq(barometre2010$Tres_defavorable)
+```
+
+#### Régression
+
+```{r régressions tresdef 2010, echo=FALSE}
+library(GGally)
+library(forestmodel)
+reg_tresdef_2010 <- glm(barometre2010$Tres_defavorable ~ barometre2010$diplome_rec + barometre2010$sexage_rec + barometre2010$cat_agg6_rec + barometre2010$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2010, exponentiate = TRUE)
+forest_model(reg_tresdef_2010, recalculate_width= TRUE)
+```
+
+
+
 
 
