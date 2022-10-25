@@ -1032,6 +1032,233 @@ reg_tresdef_2010 <- glm(barometre2010$Tres_defavorable ~ barometre2010$diplome_r
 forest_model(reg_tresdef_2010, recalculate_width= TRUE)
 ```
 
+## Pour 2005
+
+### Pro-anti
+
+#### Recodages
+
+On recode la variable va1 en une variable binaire: 1 = provaccin ; 0 = antivaccin. On affiche le tableau des fréquences de la nouvelle variable.
+
+```{r recodage pro anti 2005, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recodage de barometre2005$va1 en barometre2005$va1_rec
+barometre2005$va1_rec <- barometre2005$va1 %>%
+  as.character() %>%
+  fct_recode(
+    "1" = "2",
+    "0" = "3",
+    "0" = "4",
+    NULL = "5"
+  )
+freq(barometre2005$va1_rec)
+```
+
+On recode le diplôme:
+
+```{r recodage diplome 2005, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recodage de barometre2005$sb18r2 en barometre2005$diplome_rec
+barometre2005$diplome_rec <- barometre2005$sb18r2%>%
+  as.character() %>%
+  fct_recode(
+    "Sans diplome" = "0",
+    "Inferieur bac" = "1",
+    "Bac ou equivalent" = "2",
+    "Bac +2" = "3",
+    "Bac +3/4" = "4",
+    "Bac +5 ou plus" = "5"
+  )
+freq(barometre2005$diplome_rec)
+```
+
+On recode la categorie d'agglomération:
+
+```{r recodage cat_agg 2005, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recodage de barometre2005$catagg2 en barometre2005$cat_agg6_rec
+barometre2005$cat_agg6_rec <- barometre2005$catagg2 %>%
+  as.character() %>%
+  fct_recode(
+    "Rural" = "1",
+    "<20.000" = "2",
+    "20 - 99.999" = "3",
+    "100.000 - 199.999" = "4",
+    ">=200.000" = "5",
+    "Agglomération parisienne" = "6"
+  )
+freq(barometre2005$cat_agg6_rec)
+```
+
+On recode les catégories croisées de sexe et d'âge:
+
+```{r recodage sexage 2005, echo=FALSE}
+library(forcats)
+library(questionr)
+
+
+## Recodage de barometre2005$s2 en barometre2005$s2_rec ; pas d'âge déclaré au-dessus de 75 ans ; mineurs retirés de la BDD
+barometre2005$s2_rec <- barometre2005$s2 %>%
+  as.character() %>%
+  fct_recode(
+    NULL = "12",
+    NULL = "13",
+    NULL = "14",
+    NULL = "15",
+    NULL = "16",
+    NULL = "17",
+    "18 - 24 ans" = "18",
+    "18 - 24 ans" = "19",
+    "18 - 24 ans" = "20",
+    "18 - 24 ans" = "21",
+    "18 - 24 ans" = "22",
+    "18 - 24 ans" = "23",
+    "18 - 24 ans" = "24",
+    "25 - 34 ans" = "25",
+    "25 - 34 ans" = "26",
+    "25 - 34 ans" = "27",
+    "25 - 34 ans" = "28",
+    "25 - 34 ans" = "29",
+    "25 - 34 ans" = "30",
+    "25 - 34 ans" = "31",
+    "25 - 34 ans" = "32",
+    "25 - 34 ans" = "33",
+    "25 - 34 ans" = "34",
+    "35 - 44 ans" = "35",
+    "35 - 44 ans" = "36",
+    "35 - 44 ans" = "37",
+    "35 - 44 ans" = "38",
+    "35 - 44 ans" = "39",
+    "35 - 44 ans" = "40",
+    "35 - 44 ans" = "41",
+    "35 - 44 ans" = "42",
+    "35 - 44 ans" = "43",
+    "35 - 44 ans" = "44",
+    "45 - 54 ans" = "45",
+    "45 - 54 ans" = "46",
+    "45 - 54 ans" = "47",
+    "45 - 54 ans" = "48",
+    "45 - 54 ans" = "49",
+    "45 - 54 ans" = "50",
+    "45 - 54 ans" = "51",
+    "45 - 54 ans" = "52",
+    "45 - 54 ans" = "53",
+    "45 - 54 ans" = "54",
+    "55 - 64 ans" = "55",
+    "55 - 64 ans" = "56",
+    "55 - 64 ans" = "57",
+    "55 - 64 ans" = "58",
+    "55 - 64 ans" = "59",
+    "55 - 64 ans" = "60",
+    "55 - 64 ans" = "61",
+    "55 - 64 ans" = "62",
+    "55 - 64 ans" = "63",
+    "55 - 64 ans" = "64",
+    "65 - 75 ans" = "65",
+    "65 - 75 ans" = "66",
+    "65 - 75 ans" = "67",
+    "65 - 75 ans" = "68",
+    "65 - 75 ans" = "69",
+    "65 - 75 ans" = "70",
+    "65 - 75 ans" = "71",
+    "65 - 75 ans" = "72",
+    "65 - 75 ans" = "73",
+    "65 - 75 ans" = "74",
+    "65 - 75 ans" = "75"
+  )
+
+## Variable s1: 1= homme ; 2= femme
+
+barometre2005$sexage_rec <- case_when(
+  barometre2005$s2_rec == "18 - 24 ans" & barometre2005$s1 == 2 ~ "Femme 18-24 ans",
+  barometre2005$s2_rec == "25 - 34 ans" & barometre2005$s1 == 2 ~ "Femme 25-34 ans",
+  barometre2005$s2_rec == "35 - 44 ans"& barometre2005$s1 == 2 ~ "Femme 35-44 ans",
+  barometre2005$s2_rec == "45 - 54 ans" & barometre2005$s1 == 2 ~ "Femme 45-54 ans",
+  barometre2005$s2_rec == "55 - 64 ans" & barometre2005$s1 == 2 ~ "Femme 55-64 ans",
+  barometre2005$s2_rec ==  "65 - 75 ans" & barometre2005$s1 == 2 ~ "Femme 65-75 ans",
+  barometre2005$s2_rec == "18 - 24 ans" & barometre2005$s1 == 1 ~ "Homme 18-24 ans",
+  barometre2005$s2_rec == "25 - 34 ans" & barometre2005$s1 == 1 ~ "Homme 25-34 ans",
+  barometre2005$s2_rec == "35 - 44 ans"& barometre2005$s1 == 1 ~ "Homme 35-44 ans",
+  barometre2005$s2_rec == "45 - 54 ans" & barometre2005$s1 == 1 ~ "Homme 45-54 ans",
+  barometre2005$s2_rec == "55 - 64 ans" & barometre2005$s1 == 1 ~ "Homme 55-64 ans",
+  barometre2005$s2_rec ==  "65 - 75 ans" & barometre2005$s1 == 1 ~ "Homme 65-75 ans",
+
+)
+
+freq(barometre2005$sexage_rec)
+
+```
+
+
+On recode les catégories de revenu:
+
+```{r recodage revenus 2005, echo=FALSE}
+library(forcats)
+library(questionr)
+freq(barometre2005$sb22ucf3)
+## Recodage de barometre2005$sb22ucf3 en barometre2005$rev_3K_rec
+barometre2005$rev_3K_rec <- barometre2005$sb22ucf3%>%
+  as.character() %>%
+  fct_recode(
+    "1er tercile" = "1",
+    "2ème tercile" = "2",
+    "3ème tercile" = "3",
+    NULL = "4"
+  )
+freq(barometre2005$rev_3K_rec)
+```
+
+#### Calcul de la régression
+
+```{r régressions pro anti 2005, echo=FALSE}
+library(GGally)
+library(forestmodel)
+reg_proanti_2005 <- glm(barometre2005$va1_rec ~ barometre2005$diplome_rec + barometre2005$sexage_rec + barometre2005$cat_agg6_rec + barometre2005$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2005, exponentiate = TRUE)
+forest_model(reg_proanti_2005, recalculate_width= TRUE)
+
+```
+
+
+### Très anti Vs reste
+
+
+#### Recodage
+
+
+Très défavorable aux vaccins = 1 ; 0 sinon.
+```{r recodage très anti vs reste 2005, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recodage de barometre2005$va1 en barometre2005$Tres_defavorable
+barometre2005$Tres_defavorable <- barometre2005$va1 %>%
+  as.character() %>%
+  fct_recode(
+    "0" = "1",
+    "0" = "2",
+    "0" = "3",
+    "1" = "4",
+    NULL = "5"
+  )
+freq(barometre2005$Tres_defavorable)
+```
+
+#### Régression
+
+```{r régressions tresdef 2005, echo=FALSE}
+library(GGally)
+library(forestmodel)
+reg_tresdef_2005 <- glm(barometre2005$Tres_defavorable ~ barometre2005$diplome_rec + barometre2005$sexage_rec + barometre2005$cat_agg6_rec + barometre2005$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2005, exponentiate = TRUE)
+forest_model(reg_tresdef_2005, recalculate_width= TRUE)
+```
+
+
+
+
 
 
 
