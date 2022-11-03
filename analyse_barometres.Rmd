@@ -31,6 +31,7 @@ barometre2000 <- read_dta("Downloads/Données reçues en 2022/baro 2000/Baro20
 ```
 
 
+
 # Régressions
 
 
@@ -280,6 +281,31 @@ reg_tresfav_2020 <- glm(barometre2020$Tres_favorable ~ barometre2020$diplome_rec
 forest_model(reg_tresfav_2020, recalculate_width= TRUE)
 ```
 
+### Restriction aux favorables aux vaccins en général
+
+
+```{r régressions tresfavvsfavorables 2020, echo=FALSE}
+provax2020 <- barometre2020[barometre2020$va1_rec == 1, ]
+library(GGally)
+library(forestmodel)
+reg_tresfavvsfav_2020 <- glm(provax2020$Tres_favorable ~ provax2020$diplome_rec + provax2020$sexage_rec + provax2020$cat_agg6_rec + provax2020$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2020, exponentiate = TRUE)
+forest_model(reg_tresfavvsfav_2020, recalculate_width= TRUE)
+```
+
+### Restriction aux défavorables aux vaccin en général
+
+
+```{r régressions tresdefavvsdefavorables 2020, echo=FALSE}
+antivax2020 <- barometre2020[barometre2020$va1_rec == 0, ]
+library(GGally)
+library(forestmodel)
+reg_tresfavvsfav_2020 <- glm(antivax2020$Tres_defavorable ~ antivax2020$diplome_rec + antivax2020$sexage_rec + antivax2020$cat_agg6_rec + antivax2020$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2020, exponentiate = TRUE)
+forest_model(reg_tresfavvsfav_2020, recalculate_width= TRUE)
+```
+
+
 
 ## Pour 2019
 
@@ -523,6 +549,31 @@ reg_tresfav_2019 <- glm(barometre2019$Tres_favorable ~ barometre2019$diplome_rec
 forest_model(reg_tresfav_2019, recalculate_width= TRUE)
 ```
 
+### Restriction aux favorables aux vaccins en général
+
+
+```{r régressions tresfavvsfavorables 2019, echo=FALSE}
+provax2019 <- barometre2019[barometre2019$va1_rec == 1, ]
+library(GGally)
+library(forestmodel)
+reg_tresfavvsfav_2019 <- glm(provax2019$Tres_favorable ~ provax2019$diplome_rec + provax2019$sexage_rec + provax2019$cat_agg6_rec + provax2019$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2019, exponentiate = TRUE)
+forest_model(reg_tresfavvsfav_2019, recalculate_width= TRUE)
+```
+
+### Restriction aux défavorables aux vaccin en général
+
+
+```{r régressions tresdefavvsdefavorables 2019, echo=FALSE}
+antivax2019 <- barometre2019[barometre2019$va1_rec == 0, ]
+library(GGally)
+library(forestmodel)
+reg_tresfavvsfav_2019 <- glm(antivax2019$Tres_defavorable ~ antivax2019$diplome_rec + antivax2019$sexage_rec + antivax2019$cat_agg6_rec + antivax2019$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2019, exponentiate = TRUE)
+forest_model(reg_tresfavvsfav_2019, recalculate_width= TRUE)
+```
+
+
 
 ## Pour 2017
 
@@ -761,6 +812,33 @@ reg_tresfav_2017 <- glm(barometre2017$Tres_favorable ~ barometre2017$diplome_rec
 ## ggcoef_model(reg_proanti_2017, exponentiate = TRUE)
 forest_model(reg_tresfav_2017, recalculate_width= TRUE)
 ```
+
+
+### Restriction aux favorables aux vaccins en général
+
+
+```{r régressions tresfavvsfavorables 2017, echo=FALSE}
+provax2017 <- barometre2017[barometre2017$va1_rec == 1, ]
+library(GGally)
+library(forestmodel)
+reg_tresfavvsfav_2017 <- glm(provax2017$Tres_favorable ~ provax2017$diplome_rec + provax2017$sexage_rec + provax2017$cat_agg6_rec + provax2017$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2017, exponentiate = TRUE)
+forest_model(reg_tresfavvsfav_2017, recalculate_width= TRUE)
+```
+
+### Restriction aux défavorables aux vaccin en général
+
+
+```{r régressions tresdefavvsdefavorables 2017, echo=FALSE}
+antivax2017 <- barometre2017[barometre2017$va1_rec == 0, ]
+library(GGally)
+library(forestmodel)
+reg_tresfavvsfav_2017 <- glm(antivax2017$Tres_defavorable ~ antivax2017$diplome_rec + antivax2017$sexage_rec + antivax2017$cat_agg6_rec + antivax2017$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2017, exponentiate = TRUE)
+forest_model(reg_tresfavvsfav_2017, recalculate_width= TRUE)
+
+```
+
 
 
 ## Pour 2016
@@ -1008,6 +1086,29 @@ reg_tresfav_2016 <- glm(barometre2016$Tres_favorable ~ barometre2016$dip5_rec + 
 forest_model(reg_tresfav_2016, recalculate_width= TRUE)
 ```
 
+### Restriction aux favorables aux vaccins en général
+
+
+```{r régressions tresfavvsfavorables 2016, echo=FALSE}
+provax2016 <- barometre2016[barometre2016$va1_rec == 1, ]
+library(GGally)
+library(forestmodel)
+reg_tresfavvsfav_2016 <- glm(provax2016$Tres_favorable ~ provax2016$dip5_rec + provax2016$sexage_rec + provax2016$cat_agg6_rec + provax2016$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2016, exponentiate = TRUE)
+forest_model(reg_tresfavvsfav_2016, recalculate_width= TRUE)
+```
+
+### Restriction aux défavorables aux vaccin en général
+
+
+```{r régressions tresdefavvsdefavorables 2016, echo=FALSE}
+antivax2016 <- barometre2016[barometre2016$va1_rec == 0, ]
+library(GGally)
+library(forestmodel)
+reg_tresfavvsfav_2016 <- glm(antivax2016$Tres_defavorable ~ antivax2016$dip5_rec + antivax2016$sexage_rec + antivax2016$cat_agg6_rec + antivax2016$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2016, exponentiate = TRUE)
+forest_model(reg_tresfavvsfav_2016, recalculate_width= TRUE)
+```
 
 
 ## Pour 2014
@@ -1246,6 +1347,30 @@ library(forestmodel)
 reg_tresfav_2014 <- glm(barometre2014$Tres_favorable ~ barometre2014$diplome_rec + barometre2014$sexage_rec + barometre2014$cat_agg6_rec + barometre2014$rev_3K_rec, na.action=na.omit, family=binomial(logit))
 ## ggcoef_model(reg_proanti_2014, exponentiate = TRUE)
 forest_model(reg_tresfav_2014, recalculate_width= TRUE)
+```
+
+### Restriction aux favorables aux vaccins en général
+
+
+```{r régressions tresfavvsfavorables 2014, echo=FALSE}
+provax2014 <- barometre2014[barometre2014$va1_rec == 1, ]
+library(GGally)
+library(forestmodel)
+reg_tresfavvsfav_2014 <- glm(provax2014$Tres_favorable ~ provax2014$diplome_rec + provax2014$sexage_rec + provax2014$cat_agg6_rec + provax2014$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2014, exponentiate = TRUE)
+forest_model(reg_tresfavvsfav_2014, recalculate_width= TRUE)
+```
+
+### Restriction aux défavorables aux vaccin en général
+
+
+```{r régressions tresdefavvsdefavorables 2014, echo=FALSE}
+antivax2014 <- barometre2014[barometre2014$va1_rec == 0, ]
+library(GGally)
+library(forestmodel)
+reg_tresfavvsfav_2014 <- glm(antivax2014$Tres_defavorable ~ antivax2014$diplome_rec + antivax2014$sexage_rec + antivax2014$cat_agg6_rec + antivax2014$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2014, exponentiate = TRUE)
+forest_model(reg_tresfavvsfav_2014, recalculate_width= TRUE)
 ```
 
 
@@ -1583,6 +1708,32 @@ reg_tresfav_2010 <- glm(barometre2010$Tres_favorable ~ barometre2010$diplome_rec
 forest_model(reg_tresfav_2010, recalculate_width= TRUE)
 ```
 
+### Restriction aux favorables aux vaccins en général
+
+Proba d'être très favorable par rapport à être plutôt favorable
+
+
+```{r régressions tresfavvsfavorables 2010, echo=FALSE}
+provax2010 <- barometre2010[barometre2010$va1_rec == 1, ]
+library(GGally)
+library(forestmodel)
+reg_tresfavvsfav_2010 <- glm(provax2010$Tres_favorable ~ provax2010$diplome_rec + provax2010$sexage_rec + provax2010$cat_agg6_rec + provax2010$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2010, exponentiate = TRUE)
+forest_model(reg_tresfavvsfav_2010, recalculate_width= TRUE)
+```
+
+### Restriction aux défavorables aux vaccins en général
+
+Proba d'être très défavorable par rapport à être plutôt défavorable
+
+```{r régressions tresdefavvsdefavorables 2010, echo=FALSE}
+antivax2010 <- barometre2010[barometre2010$va1_rec == 0, ]
+library(GGally)
+library(forestmodel)
+reg_tresfavvsfav_2010 <- glm(antivax2010$Tres_defavorable ~ antivax2010$diplome_rec + antivax2010$sexage_rec + antivax2010$cat_agg6_rec + antivax2010$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2010, exponentiate = TRUE)
+forest_model(reg_tresfavvsfav_2010, recalculate_width= TRUE)
+```
 
 
 ## Pour 2005
@@ -1850,7 +2001,6 @@ library(forestmodel)
 reg_proanti_2005 <- glm(barometre2005$va1_rec ~ barometre2005$diplome_rec + barometre2005$sexage_rec + barometre2005$cat_agg6_rec + barometre2005$rev_3K_rec, na.action=na.omit, family=binomial(logit))
 ## ggcoef_model(reg_proanti_2005, exponentiate = TRUE)
 forest_model(reg_proanti_2005, recalculate_width= TRUE)
-
 ```
 
 
@@ -1918,6 +2068,31 @@ library(forestmodel)
 reg_tresfav_2005 <- glm(barometre2005$Tres_favorable ~ barometre2005$diplome_rec + barometre2005$sexage_rec + barometre2005$cat_agg6_rec + barometre2005$rev_3K_rec, na.action=na.omit, family=binomial(logit))
 ## ggcoef_model(reg_proanti_2005, exponentiate = TRUE)
 forest_model(reg_tresfav_2005, recalculate_width= TRUE)
+```
+
+
+### Restriction aux favorables aux vaccins en général
+
+
+```{r régressions tresfavvsfavorables 2005, echo=FALSE}
+provax2005 <- barometre2005[barometre2005$va1_rec == 1, ]
+library(GGally)
+library(forestmodel)
+reg_tresfavvsfav_2005 <- glm(provax2005$Tres_favorable ~ provax2005$diplome_rec + provax2005$sexage_rec + provax2005$cat_agg6_rec + provax2005$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2005, exponentiate = TRUE)
+forest_model(reg_tresfavvsfav_2005, recalculate_width= TRUE)
+```
+
+### Restriction aux défavorables aux vaccin en général
+
+
+```{r régressions tresdefavvsdefavorables 2005, echo=FALSE}
+antivax2005 <- barometre2005[barometre2005$va1_rec == 0, ]
+library(GGally)
+library(forestmodel)
+reg_tresfavvsfav_2005 <- glm(antivax2005$Tres_defavorable ~ antivax2005$diplome_rec + antivax2005$sexage_rec + antivax2005$cat_agg6_rec + antivax2005$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2005, exponentiate = TRUE)
+forest_model(reg_tresfavvsfav_2005, recalculate_width= TRUE)
 ```
 
 
@@ -2231,5 +2406,26 @@ forest_model(reg_tresfav_2000, recalculate_width= TRUE)
 ```
 
 
+### Restriction aux favorables aux vaccins en général
 
 
+```{r régressions tresfavvsfavorables 2000, echo=FALSE}
+provax2000 <- barometre2000[barometre2000$va1_rec == 1, ]
+library(GGally)
+library(forestmodel)
+reg_tresfavvsfav_2000 <- glm(provax2000$Tres_favorable ~ provax2000$diplome_rec + provax2000$sexage_rec + provax2000$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2000, exponentiate = TRUE)
+forest_model(reg_tresfavvsfav_2000, recalculate_width= TRUE)
+```
+
+### Restriction aux défavorables aux vaccin en général
+
+
+```{r régressions tresdefavvsdefavorables 2000, echo=FALSE}
+antivax2000 <- barometre2000[barometre2000$va1_rec == 0, ]
+library(GGally)
+library(forestmodel)
+reg_tresfavvsfav_2000 <- glm(antivax2000$Tres_defavorable ~ antivax2000$diplome_rec + antivax2000$sexage_rec + antivax2000$rev_3K_rec, na.action=na.omit, family=binomial(logit))
+## ggcoef_model(reg_proanti_2000, exponentiate = TRUE)
+forest_model(reg_tresfavvsfav_2000, recalculate_width= TRUE)
+```
