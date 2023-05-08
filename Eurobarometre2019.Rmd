@@ -1,0 +1,202 @@
+---
+title: "Eurobarometre 2019"
+output: html_document
+date: '2023-05-08'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+setwd('/Users/126862/')
+```
+
+# Importation des bases de données
+
+
+## Conversion stata vers R
+Les bases de données Stata sont importées et converties pour être lues par R.
+
+```{r importation données, echo=FALSE}
+setwd('/Users/126862/')
+Sys.setlocale("LC_ALL", "fr_FR.UTF-8")
+library(haven)
+eurobarometre2019 <- read_dta("Downloads/ZA7562_v1-0-0.dta")
+
+
+```
+
+## Découpage des variables
+
+
+### Question vaccin
+
+```{r découpage question vaccin, echo=FALSE}
+library(questionr)
+library(forcats)
+## Recoding eurobarometre2019$qc2 into eurobarometre2019$qc2_rec
+eurobarometre2019$qc2_rec <- eurobarometre2019$qc2 %>%
+  as.character() %>%
+  fct_recode(
+    "1" = "2",
+    "0" = "3",
+    "0" = "4",
+    "1" = "5",
+    NULL = "6"
+  )
+```
+### Age
+
+On cherche d'abord à créer une variable âge, que l'on interagira avec le genre.
+
+
+```{r découpage âge, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recodage de eurobarometre2019$d11 en eurobarometre2019$age
+eurobarometre2019$Age <- eurobarometre2019$d11 %>%
+  as.character() %>%
+  fct_recode(
+    NULL = "15",
+    NULL = "16",
+    NULL = "17",
+    "18-24" = "18",
+    "18-24" = "19",
+    "18-24" = "20",
+    "18-24" = "21",
+    "18-24" = "22",
+    "18-24" = "23",
+    "18-24" = "24",
+    "25-34" = "25",
+    "25-34" = "26",
+    "25-34" = "27",
+    "25-34" = "28",
+    "25-34" = "29",
+    "25-34" = "30",
+    "25-34" = "31",
+    "25-34" = "32",
+    "25-34" = "33",
+    "25-34" = "34",
+    "35-44" = "35",
+    "35-44" = "36",
+    "35-44" = "37",
+    "35-44" = "38",
+    "35-44" = "39",
+    "35-44" = "40",
+    "35-44" = "41",
+    "35-44" = "42",
+    "35-44" = "43",
+    "35-44" = "44",
+    "45-54" = "45",
+    "45-54" = "46",
+    "45-54" = "47",
+    "45-54" = "48",
+    "45-54" = "49",
+    "45-54" = "50",
+    "45-54" = "51",
+    "45-54" = "52",
+    "45-54" = "53",
+    "45-54" = "54",
+    "55-64" = "55",
+    "55-64" = "56",
+    "55-64" = "57",
+    "55-64" = "58",
+    "55-64" = "59",
+    "55-64" = "60",
+    "55-64" = "61",
+    "55-64" = "62",
+    "55-64" = "63",
+    "55-64" = "64",
+    "65-74" = "65",
+    "65-74" = "66",
+    "65-74" = "67",
+    "65-74" = "68",
+    "65-74" = "69",
+    "65-74" = "70",
+    "65-74" = "71",
+    "65-74" = "72",
+    "65-74" = "73",
+    "65-74" = "74",
+    NULL = "75",
+    NULL = "76",
+    NULL = "77",
+    NULL = "78",
+    NULL = "79",
+    NULL = "80",
+    NULL = "81",
+    NULL = "82",
+    NULL = "83",
+    NULL = "84",
+    NULL = "85",
+    NULL = "86",
+    NULL = "87",
+    NULL = "88",
+    NULL = "89",
+    NULL = "90",
+    NULL = "91",
+    NULL = "92",
+    NULL = "93",
+    NULL = "94",
+    NULL = "95",
+    NULL = "96",
+    NULL = "97",
+    NULL = "98"
+  )
+```
+
+### Genre
+
+```{r découpage genre, echo=FALSE}
+## Recoding eurobarometre2019$d10 into eurobarometre2019$d10_rec
+eurobarometre2019$Genre <- eurobarometre2019$d10 %>%
+  as.character() %>%
+  fct_recode(
+    "Homme" = "1",
+    "Femme" = "2"
+  )
+```
+
+### Age à la fin de l'éducation
+
+
+```{r découpage genre, echo=FALSE}
+boxplot(eurobarometre2019$d8)
+```
+
+
+
+## Application des pondérations
+
+On applique les pondérations suggérées par l'eurobaromètre avec le package survey. La pondération W1 de 2019 correspond à la pondéraiton Nation Weight II dans les enquêtes précédents l'Eurobaromètre 31.
+
+```{r pondération données, echo=FALSE}
+library(survey)
+eurobarometre2019_Wgt <- svydesign(ids = ~1, data = eurobarometre2019, weights = ~eurobarometre2019$w1)
+```
+
+
+
+
+
+
+# Calculs
+
+## Stats descs
+
+## Régressions
+
+```{r pondération données, echo=FALSE}
+# Fit a survey-weighted regression model
+library(GGally)
+library(forestmodel)
+myresult <- svyglm(qc2_rec ~ Age + Genre + d8 + d60 + d25 + d1, family = binomial(), design = eurobarometre2019_Wgt)
+coef(myresult)
+summary(myresult)
+ggcoef_model(myresult, exponentiate = TRUE)
+forest_model(myresult, recalculate_width= TRUE)
+```
+
+
+
