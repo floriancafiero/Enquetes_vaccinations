@@ -4,9 +4,6 @@ output: html_document
 date: '2023-05-08'
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
@@ -17,23 +14,27 @@ setwd('/Users/126862/')
 
 
 ## Conversion stata vers R
-Les bases de données Stata sont importées et converties pour être lues par R.
+Les bases de données Stata sont importées et converties pour être lues par R. On filtre pour ne travailler tout d'abord que sur la France.
 
 ```{r importation données, echo=FALSE}
 setwd('/Users/126862/')
 Sys.setlocale("LC_ALL", "fr_FR.UTF-8")
 library(haven)
 eurobarometre2019 <- read_dta("Downloads/ZA7562_v1-0-0.dta")
-
-
+eurobarometre2019 <- subset(eurobarometre2019, eurobarometre2019$country == 1)
 ```
 
 ## Découpage des variables
 
 
-### Question vaccin
+### Questions vaccins
 
-```{r découpage question vaccin, echo=FALSE}
+#### Efficacité des vaccins sur les maladies infectieuses
+
+
+On regroupe de manière binaire les réponses à l'item QC2: "Toutes les maladies mentionnées précédemment sont des maladies infectieuses et peuvent être évitées. Pensez-vous que les vaccins peuvent être efficaces pour les prévenir ?". Les réponses "Oui certainement", "oui probablement", "cela dépend desquelles" (spontané) sont regroupées sous oui, "non probablement pas", "non pas du tout" sont regroupés sous non.
+
+```{r découpage question vaccin efficacité, echo=FALSE}
 library(questionr)
 library(forcats)
 ## Recoding eurobarometre2019$qc2 into eurobarometre2019$qc2_rec
@@ -46,7 +47,78 @@ eurobarometre2019$qc2_rec <- eurobarometre2019$qc2 %>%
     "1" = "5",
     NULL = "6"
   )
+summary(eurobarometre2019$qc2_rec)
+
+eurobarometre2019$qc2_rec <- relevel (eurobarometre2019$qc2_rec, "0")
 ```
+
+#### Echelle adhésion vaccins
+
+QC7-1: Vaccines overload and weaken the immune system
+
+```{r découpage échelle vaccin, echo=FALSE}
+library(questionr)
+library(forcats)
+## Recoding eurobarometre2019$qc7_1 into eurobarometre2019$qc7_1_rec
+eurobarometre2019$qc7_1_rec <- eurobarometre2019$qc7_1 %>%
+  as.character() %>%
+  fct_recode(
+    "0" = "2",
+    NULL = "3"
+  )
+summary(eurobarometre2019$qc7_1_rec)
+eurobarometre2019$qc7_1_rec <- relevel (eurobarometre2019$qc7_1_rec, "0")
+```
+
+QC7-2: Vaccines can cause the disease against which they protect
+
+```{r découpage échelle vaccin qc7_2, echo=FALSE}
+library(questionr)
+library(forcats)
+## Recoding eurobarometre2019$qc7_2 into eurobarometre2019$qc7_2_rec
+eurobarometre2019$qc7_2_rec <- eurobarometre2019$qc7_2 %>%
+  as.character() %>%
+  fct_recode(
+    "0" = "2",
+    NULL = "3"
+  )
+eurobarometre2019$qc7_2_rec <- relevel (eurobarometre2019$qc7_2_rec, "0")
+```
+
+QC7-3: Vaccines can often produce serious side-effects
+
+```{r découpage échelle vaccin qc7_3, echo=FALSE}
+library(questionr)
+library(forcats)
+## Recoding eurobarometre2019$qc7_3 into eurobarometre2019$qc7_3_rec
+eurobarometre2019$qc7_3_rec <- eurobarometre2019$qc7_3 %>%
+  as.character() %>%
+  fct_recode(
+    "0" = "2",
+    NULL = "3"
+  )
+eurobarometre2019$qc7_3_rec <- relevel (eurobarometre2019$qc7_3_rec, "0")
+```
+
+
+QC7-4: Vaccines are rigorously tested before being authorised for use
+
+```{r découpage échelle vaccin qc7_4, echo=FALSE}
+library(questionr)
+library(forcats)
+## Recoding eurobarometre2019$qc7_4 into eurobarometre2019$qc7_4_rec
+eurobarometre2019$qc7_4_rec <- eurobarometre2019$qc7_4 %>%
+  as.character() %>%
+  fct_recode(
+    "0" = "2",
+    NULL = "3"
+  )
+eurobarometre2019$qc7_4_rec <- relevel (eurobarometre2019$qc7_4_rec, "0")
+```
+
+
+
+
 ### Age
 
 On cherche d'abord à créer une variable âge, que l'on interagira avec le genre.
@@ -146,11 +218,11 @@ eurobarometre2019$Age <- eurobarometre2019$d11 %>%
   )
 ```
 
-### Genre
+### Sexe
 
 ```{r découpage genre, echo=FALSE}
 ## Recoding eurobarometre2019$d10 into eurobarometre2019$d10_rec
-eurobarometre2019$Genre <- eurobarometre2019$d10 %>%
+eurobarometre2019$Sexe <- eurobarometre2019$d10 %>%
   as.character() %>%
   fct_recode(
     "Homme" = "1",
@@ -161,8 +233,134 @@ eurobarometre2019$Genre <- eurobarometre2019$d10 %>%
 ### Age à la fin de l'éducation
 
 
-```{r découpage genre, echo=FALSE}
-boxplot(eurobarometre2019$d8)
+```{r découpage éducation, echo=FALSE}
+summary(eurobarometre2019$d8)
+## Recoding eurobarometre2019$d8 into eurobarometre2019$d8_rec
+eurobarometre2019$AgeDiplome <- eurobarometre2019$d8 %>%
+  as.character() %>%
+  fct_recode(
+    "<17 ans" = "0",
+    "<17 ans" = "9",
+    "<17 ans" = "10",
+    "<17 ans" = "11",
+    "<17 ans" = "12",
+    "<17 ans" = "13",
+    "<17 ans" = "14",
+    "<17 ans" = "15",
+    "<17 ans" = "16",
+    "17-22 ans" = "17",
+    "17-22 ans" = "18",
+    "17-22 ans" = "19",
+    "17-22 ans" = "20",
+    "17-22 ans" = "21",
+    "17-22 ans" = "22",
+    ">22 ans" = "23",
+    ">22 ans" = "24",
+    ">22 ans" = "25",
+    ">22 ans" = "26",
+    ">22 ans" = "27",
+    ">22 ans" = "28",
+    ">22 ans" = "29",
+    ">22 ans" = "30",
+    ">22 ans" = "31",
+    ">22 ans" = "32",
+    ">22 ans" = "33",
+    ">22 ans" = "34",
+    ">22 ans" = "35",
+    ">22 ans" = "37",
+    ">22 ans" = "39",
+    ">22 ans" = "40",
+    ">22 ans" = "45",
+    ">22 ans" = "50",
+    ">22 ans" = "79",
+    ">22 ans" = "97",
+    ">22 ans" = "98",
+    ">22 ans" = "99"
+  )
+
+```
+
+### Nouvelle variable: interaction sexe et âge
+
+```{r interaction sexe et age, echo=FALSE}
+library(forcats)
+library(questionr)
+library(dplyr)
+eurobarometre2019$SexeAge <- case_when(
+  eurobarometre2019$Age == "18-24" & eurobarometre2019$d10 == 2 ~ "Femme 18-24 ans",
+  eurobarometre2019$Age == "25-34" & eurobarometre2019$d10 == 2 ~ "Femme 25-34 ans",
+  eurobarometre2019$Age == "35-44"& eurobarometre2019$d10 == 2 ~ "Femme 35-44 ans",
+  eurobarometre2019$Age == "45-54" & eurobarometre2019$d10 == 2 ~ "Femme 45-54 ans",
+  eurobarometre2019$Age == "55-64" & eurobarometre2019$d10 == 2 ~ "Femme 55-64 ans",
+  eurobarometre2019$Age ==  "65-75" & eurobarometre2019$d10 == 2 ~ "Femme 65-75 ans",
+  eurobarometre2019$Age == "18-24" & eurobarometre2019$d10 == 1 ~ "Homme 18-24 ans",
+  eurobarometre2019$Age == "25-34" & eurobarometre2019$d10 == 1 ~ "Homme 25-34 ans",
+  eurobarometre2019$Age == "35-44"& eurobarometre2019$d10 == 1 ~ "Homme 35-44 ans",
+  eurobarometre2019$Age == "45-54" & eurobarometre2019$d10 == 1 ~ "Homme 45-54 ans",
+  eurobarometre2019$Age == "55-64" & eurobarometre2019$d10 == 1 ~ "Homme 55-64 ans",
+  eurobarometre2019$Age ==  "65-75" & eurobarometre2019$d10 == 1 ~ "Homme 65-75 ans",
+)
+eurobarometre2019$SexeAge <- as.factor(eurobarometre2019$SexeAge)
+```
+
+
+### Proxy du revenu: difficultés à payer ses factures
+
+```{r difficultés payer factures, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recoding eurobarometre2019$d60 into eurobarometre2019$d60_rec
+eurobarometre2019$DifficultéAPayerFactures <- eurobarometre2019$d60 %>%
+  as.character() %>%
+  fct_recode(
+    "Most of the time" = "1",
+    "From time to time" = "2",
+    "Never" = "3",
+    NULL = "7"
+  )
+eurobarometre2019$DifficultéAPayerFactures <- as.factor(eurobarometre2019$DifficultéAPayerFactures)
+```
+
+### Type d'agglomération
+
+```{r Type Agglomeration, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recoding eurobarometre2019$TypeAgglomeration into eurobarometre2019$d25_rec
+eurobarometre2019$TypeAgglomeration <- eurobarometre2019$d25 %>%
+  as.character() %>%
+  fct_recode(
+    "Rural" = "1",
+    "Petite et moyennes villes" = "2",
+    "Grandes villes" = "3"
+  )
+eurobarometre2019$TypeAgglomeration <- as.factor(eurobarometre2019$TypeAgglomeration)
+```
+
+### Opinion politique
+
+```{r Opinion Politique, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recodage de eurobarometre2019$OpinionPolitique en eurobarometre2019$d1_rec
+eurobarometre2019$OpinionPolitique <- eurobarometre2019$d1 %>%
+  as.character() %>%
+  fct_recode(
+    "Extrême Gauche" = "1",
+    "Extrême Gauche" = "2",
+    "Gauche" = "3",
+    "Gauche" = "4",
+    "Centre" = "5",
+    "Centre" = "6",
+    "Droite" = "7",
+    "Droite" = "8",
+    "Extrême droite" = "9",
+    "Extrême droite" = "10",
+    NULL = "97",
+    NULL = "98"
+  )
+summary(eurobarometre2019$OpinionPolitique)
+eurobarometre2019$OpinionPolitique <- as.factor(eurobarometre2019$OpinionPolitique)
 ```
 
 
@@ -185,17 +383,456 @@ eurobarometre2019_Wgt <- svydesign(ids = ~1, data = eurobarometre2019, weights =
 
 ## Stats descs
 
+### Pour QC_2 (Efficacité des vaccins)
+
+
+#### Sexe et Age
+
+```{r tri croisé qc2 sexe age, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc2_SexeAge <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc2_rec,
+  include = SexeAge )
+
+mytable_qc2_SexeAge
+```
+
+#### Age du dernier diplôme (proxy niveau d'éducation)
+
+```{r tri croisé qc2 éducation , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc2_Educ <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc2_rec,
+  include = AgeDiplome)
+
+mytable_qc2_Educ
+```
+
+#### Difficulté à payer les factures (proxy revenus)
+
+```{r tri croisé qc2 revenu , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc2_Revenu <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc2_rec,
+  include = DifficultéAPayerFactures)
+
+mytable_qc2_Revenu
+```
+
+#### Type d'agglomeration
+
+```{r tri croisé qc2 catagg , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc2_Revenu <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc2_rec,
+  include = TypeAgglomeration)
+
+mytable_qc2_Revenu
+```
+
+#### Opinion politique
+
+
+```{r tri croisé qc2 opinion politique , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc2_Politique <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc2_rec,
+  include = OpinionPolitique)
+
+mytable_qc2_Politique
+```
+
+
+### Pour QC7_1
+
+QC7-1: Vaccines overload and weaken the immune system.  (Fr: "Les vaccins surchargent et affaiblissent le système immunitaire") 1= yes ; 0= no; reference level: 0.
+
+#### Sexe et Age
+
+```{r tri croisé qc7_1 sexe age, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_1_SexeAge <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_1_rec,
+  include = SexeAge )
+
+mytable_qc7_1_SexeAge
+```
+
+#### Age du dernier diplôme (proxy niveau d'éducation)
+
+```{r tri croisé qc7_1 éducation , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_1_Educ <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_1_rec,
+  include = AgeDiplome)
+
+mytable_qc7_1_Educ
+```
+
+#### Difficulté à payer les factures (proxy revenus)
+
+```{r tri croisé qc7_1 revenu , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_1_Revenu <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_1_rec,
+  include = DifficultéAPayerFactures)
+
+mytable_qc7_1_Revenu
+```
+
+#### Type d'agglomeration
+
+```{r tri croisé qc7_1 catagg , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_1_Revenu <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_1_rec,
+  include = TypeAgglomeration)
+
+mytable_qc7_1_Revenu
+```
+
+#### Opinion politique
+
+
+```{r tri croisé qc7_1 opinion politique , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_1_Politique <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_1_rec,
+  include = OpinionPolitique)
+
+mytable_qc7_1_Politique
+```
+
+### Pour QC7_2
+
+QC7-2: Vaccines can cause the disease against which they protect. (Fr: "Les vaccins peuvent causer la maladie contre laquelle ils protègent") 1= oui ; 0= non; niveau dé référence: 0.
+
+#### Sexe et Age
+
+```{r tri croisé qc7_2 sexe age, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_2_SexeAge <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_2_rec,
+  include = SexeAge )
+
+mytable_qc7_2_SexeAge
+```
+
+#### Age du dernier diplôme (proxy niveau d'éducation)
+
+```{r tri croisé qc7_2 éducation , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_2_Educ <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_2_rec,
+  include = AgeDiplome)
+
+mytable_qc7_2_Educ
+```
+
+#### Difficulté à payer les factures (proxy revenus)
+
+```{r tri croisé qc7_2 revenu , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_2_Revenu <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_2_rec,
+  include = DifficultéAPayerFactures)
+
+mytable_qc7_2_Revenu
+```
+
+#### Type d'agglomeration
+
+```{r tri croisé qc7_2 catagg , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_2_Revenu <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_2_rec,
+  include = TypeAgglomeration)
+
+mytable_qc7_2_Revenu
+```
+
+#### Opinion politique
+
+
+```{r tri croisé qc7_2 opinion politique , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_2_Politique <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_2_rec,
+  include = OpinionPolitique)
+
+mytable_qc7_2_Politique
+```
+
+### Pour QC7_3
+
+
+QC7-3: Vaccines can often produce serious side-effects. (Fr: "Les vaccins peuvent souvent produire de graves effets secondaires") 1= oui ; 0= non; niveau de référence: 0.
+
+#### Sexe et Age
+
+```{r tri croisé qc7_3 sexe age, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_3_SexeAge <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_3_rec,
+  include = SexeAge )
+
+mytable_qc7_3_SexeAge
+```
+
+#### Age du dernier diplôme (proxy niveau d'éducation)
+
+```{r tri croisé qc7_3 éducation , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_3_Educ <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_3_rec,
+  include = AgeDiplome)
+
+mytable_qc7_3_Educ
+```
+
+#### Difficulté à payer les factures (proxy revenus)
+
+```{r tri croisé qc7_3 revenu , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_3_Revenu <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_3_rec,
+  include = DifficultéAPayerFactures)
+
+mytable_qc7_3_Revenu
+```
+
+#### Type d'agglomeration
+
+```{r tri croisé qc7_3 catagg , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_3_Revenu <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_3_rec,
+  include = TypeAgglomeration)
+
+mytable_qc7_3_Revenu
+```
+
+#### Opinion politique
+
+
+```{r tri croisé qc7_3 opinion politique , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_3_Politique <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_3_rec,
+  include = OpinionPolitique)
+
+mytable_qc7_3_Politique
+```
+
+### Pour QC7_4
+
+QC7-4: Vaccines are rigorously tested before being authorised for use.(Fr: "Les vaccins sont rigoureusement testés avant d'être autorisés à être utilisés") 1= yes ; 0= no; niveau de référence: 0. (DANGER: item à la polarité inversée !)
+
+
+#### Sexe et Age
+
+```{r tri croisé qc7_4 sexe age, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_4_SexeAge <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_4_rec,
+  include = SexeAge )
+
+mytable_qc7_4_SexeAge
+```
+
+#### Age du dernier diplôme (proxy niveau d'éducation)
+
+```{r tri croisé qc7_4 éducation , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_4_Educ <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_4_rec,
+  include = AgeDiplome)
+
+mytable_qc7_4_Educ
+```
+
+#### Difficulté à payer les factures (proxy revenus)
+
+```{r tri croisé qc7_4 revenu , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_4_Revenu <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_4_rec,
+  include = DifficultéAPayerFactures)
+
+mytable_qc7_4_Revenu
+```
+
+#### Type d'agglomeration
+
+```{r tri croisé qc7_4 catagg , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_4_Revenu <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_4_rec,
+  include = TypeAgglomeration)
+
+mytable_qc7_4_Revenu
+```
+
+#### Opinion politique
+
+
+```{r tri croisé qc7_4 opinion politique , echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_qc7_4_Politique <- tbl_svysummary(
+  eurobarometre2019_Wgt, 
+  missing = "no",
+  by= qc7_4_rec,
+  include = OpinionPolitique)
+
+mytable_qc7_4_Politique
+```
+
+
+
+
+
 ## Régressions
 
-```{r pondération données, echo=FALSE}
-# Fit a survey-weighted regression model
+### Sur QC2
+
+```{r régression qc2 , echo=FALSE}
+
 library(GGally)
 library(forestmodel)
-myresult <- svyglm(qc2_rec ~ Age + Genre + d8 + d60 + d25 + d1, family = binomial(), design = eurobarometre2019_Wgt)
+myresult <- svyglm(qc2_rec ~ SexeAge + AgeDiplome + DifficultéAPayerFactures + TypeAgglomeration + OpinionPolitique, family = binomial(link=logit), design = eurobarometre2019_Wgt)
 coef(myresult)
 summary(myresult)
 ggcoef_model(myresult, exponentiate = TRUE)
 forest_model(myresult, recalculate_width= TRUE)
+```
+
+### Sur QC7
+
+#### Sur QC7_1
+
+QC7-1: Vaccines overload and weaken the immune system.  (Fr: "Les vaccins surchargent et affaiblissent le système immunitaire") 1= yes ; 0= no; reference level: 0.
+
+```{r régression qc7_1 , echo=FALSE}
+
+library(GGally)
+library(forestmodel)
+myresult_qc7_1 <- svyglm(qc7_1_rec ~ SexeAge + AgeDiplome + DifficultéAPayerFactures + TypeAgglomeration + OpinionPolitique, family = binomial(link=logit), design = eurobarometre2019_Wgt)
+coef(myresult_qc7_1)
+summary(myresult_qc7_1)
+ggcoef_model(myresult_qc7_1, exponentiate = TRUE)
+forest_model(myresult_qc7_1, recalculate_width= TRUE)
+```
+
+
+QC7-2: Vaccines can cause the disease against which they protect. (Fr: "Les vaccins peuvent causer la maladie contre laquelle ils protègent") 1= oui ; 0= non; niveau dé référence: 0.
+
+```{r régression qc7_2 , echo=FALSE}
+
+library(GGally)
+library(forestmodel)
+myresult_qc7_2 <- svyglm(qc7_2_rec ~ SexeAge + AgeDiplome + DifficultéAPayerFactures + TypeAgglomeration + OpinionPolitique, family = binomial(link=logit), design = eurobarometre2019_Wgt)
+coef(myresult_qc7_2)
+summary(myresult_qc7_2)
+ggcoef_model(myresult_qc7_2, exponentiate = TRUE)
+forest_model(myresult_qc7_2, recalculate_width= TRUE)
+```
+
+QC7-3: Vaccines can often produce serious side-effects. (Fr: "Les vaccins peuvent souvent produire de graves effets secondaires") 1= oui ; 0= non; niveau de référence: 0.
+
+```{r régression qc7_3 , echo=FALSE}
+
+library(GGally)
+library(forestmodel)
+myresult_qc7_3 <- svyglm(qc7_3_rec ~ SexeAge + AgeDiplome + DifficultéAPayerFactures + TypeAgglomeration + OpinionPolitique, family = binomial(link=logit), design = eurobarometre2019_Wgt)
+coef(myresult_qc7_3)
+summary(myresult_qc7_3)
+ggcoef_model(myresult_qc7_3, exponentiate = TRUE)
+forest_model(myresult_qc7_3, recalculate_width= TRUE)
+```
+
+QC7-4: Vaccines are rigorously tested before being authorised for use.(Fr: "Les vaccins sont rigoureusement testés avant d'être autorisés à être utilisés") 1= yes ; 0= no; niveau de référence: 0. (DANGER: item à la polarité inversée !)
+
+```{r régression qc7_4 , echo=FALSE}
+library(GGally)
+library(forestmodel)
+myresult_qc7_4 <- svyglm(qc7_4_rec ~ SexeAge + AgeDiplome + DifficultéAPayerFactures + TypeAgglomeration + OpinionPolitique, family = binomial(link=logit), design = eurobarometre2019_Wgt)
+coef(myresult_qc7_4)
+summary(myresult_qc7_4)
+ggcoef_model(myresult_qc7_4, exponentiate = TRUE)
+forest_model(myresult_qc7_4, recalculate_width= TRUE)
 ```
 
 
