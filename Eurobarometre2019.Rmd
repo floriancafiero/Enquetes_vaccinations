@@ -32,7 +32,7 @@ eurobarometre2019 <- subset(eurobarometre2019, eurobarometre2019$country == 1)
 #### Efficacité des vaccins sur les maladies infectieuses
 
 
-On regroupe de manière binaire les réponses à l'item QC2: "Toutes les maladies mentionnées précédemment sont des maladies infectieuses et peuvent être évitées. Pensez-vous que les vaccins peuvent être efficaces pour les prévenir ?". Les réponses "Oui certainement", "oui probablement", "cela dépend desquelles" (spontané) sont regroupées sous oui, "non probablement pas", "non pas du tout" sont regroupés sous non.
+On regroupe de manière binaire les réponses à l'item QC2: "Toutes les maladies mentionnées précédemment sont des maladies infectieuses et peuvent être évitées. Pensez-vous que les vaccins peuvent être efficaces pour les prévenir ?". Les réponses "Oui certainement", "oui probablement", "cela dépend desquelles" (spontané) sont regroupées sous oui (1), "non probablement pas", "non pas du tout" sont regroupés sous non (0).
 
 ```{r découpage question vaccin efficacité, echo=FALSE}
 library(questionr)
@@ -54,7 +54,9 @@ eurobarometre2019$qc2_rec <- relevel (eurobarometre2019$qc2_rec, "0")
 
 #### Echelle adhésion vaccins
 
-QC7-1: Vaccines overload and weaken the immune system
+QC7-1: Vaccines overload and weaken the immune system: 1 = oui ; 0 = non
+
+
 
 ```{r découpage échelle vaccin, echo=FALSE}
 library(questionr)
@@ -70,7 +72,7 @@ summary(eurobarometre2019$qc7_1_rec)
 eurobarometre2019$qc7_1_rec <- relevel (eurobarometre2019$qc7_1_rec, "0")
 ```
 
-QC7-2: Vaccines can cause the disease against which they protect
+QC7-2: Vaccines can cause the disease against which they protect: 1 = oui ; 0 = non
 
 ```{r découpage échelle vaccin qc7_2, echo=FALSE}
 library(questionr)
@@ -85,7 +87,7 @@ eurobarometre2019$qc7_2_rec <- eurobarometre2019$qc7_2 %>%
 eurobarometre2019$qc7_2_rec <- relevel (eurobarometre2019$qc7_2_rec, "0")
 ```
 
-QC7-3: Vaccines can often produce serious side-effects
+QC7-3: Vaccines can often produce serious side-effects: : 1 = oui ; 0 = non
 
 ```{r découpage échelle vaccin qc7_3, echo=FALSE}
 library(questionr)
@@ -101,7 +103,7 @@ eurobarometre2019$qc7_3_rec <- relevel (eurobarometre2019$qc7_3_rec, "0")
 ```
 
 
-QC7-4: Vaccines are rigorously tested before being authorised for use
+QC7-4: Vaccines are rigorously tested before being authorised for use: : 1 = oui ; 0 = non
 
 ```{r découpage échelle vaccin qc7_4, echo=FALSE}
 library(questionr)
@@ -364,7 +366,6 @@ eurobarometre2019$OpinionPolitique <- as.factor(eurobarometre2019$OpinionPolitiq
 ```
 
 
-
 ## Application des pondérations
 
 On applique les pondérations suggérées par l'eurobaromètre avec le package survey. La pondération W1 de 2019 correspond à la pondéraiton Nation Weight II dans les enquêtes précédents l'Eurobaromètre 31.
@@ -373,10 +374,6 @@ On applique les pondérations suggérées par l'eurobaromètre avec le package s
 library(survey)
 eurobarometre2019_Wgt <- svydesign(ids = ~1, data = eurobarometre2019, weights = ~eurobarometre2019$w1)
 ```
-
-
-
-
 
 
 # Calculs
@@ -394,6 +391,7 @@ library(gtsummary)
 mytable_qc2_SexeAge <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc2_rec,
   include = SexeAge )
 
@@ -408,6 +406,7 @@ library(gtsummary)
 mytable_qc2_Educ <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent="row",
   by= qc2_rec,
   include = AgeDiplome)
 
@@ -422,6 +421,7 @@ library(gtsummary)
 mytable_qc2_Revenu <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent= "row",
   by= qc2_rec,
   include = DifficultéAPayerFactures)
 
@@ -436,6 +436,7 @@ library(gtsummary)
 mytable_qc2_Revenu <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc2_rec,
   include = TypeAgglomeration)
 
@@ -451,6 +452,7 @@ library(gtsummary)
 mytable_qc2_Politique <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc2_rec,
   include = OpinionPolitique)
 
@@ -470,6 +472,7 @@ library(gtsummary)
 mytable_qc7_1_SexeAge <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_1_rec,
   include = SexeAge )
 
@@ -484,6 +487,7 @@ library(gtsummary)
 mytable_qc7_1_Educ <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_1_rec,
   include = AgeDiplome)
 
@@ -498,6 +502,7 @@ library(gtsummary)
 mytable_qc7_1_Revenu <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_1_rec,
   include = DifficultéAPayerFactures)
 
@@ -512,6 +517,7 @@ library(gtsummary)
 mytable_qc7_1_Revenu <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_1_rec,
   include = TypeAgglomeration)
 
@@ -527,6 +533,7 @@ library(gtsummary)
 mytable_qc7_1_Politique <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_1_rec,
   include = OpinionPolitique)
 
@@ -545,6 +552,7 @@ library(gtsummary)
 mytable_qc7_2_SexeAge <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_2_rec,
   include = SexeAge )
 
@@ -559,6 +567,7 @@ library(gtsummary)
 mytable_qc7_2_Educ <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_2_rec,
   include = AgeDiplome)
 
@@ -573,6 +582,7 @@ library(gtsummary)
 mytable_qc7_2_Revenu <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_2_rec,
   include = DifficultéAPayerFactures)
 
@@ -587,6 +597,7 @@ library(gtsummary)
 mytable_qc7_2_Revenu <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_2_rec,
   include = TypeAgglomeration)
 
@@ -602,6 +613,7 @@ library(gtsummary)
 mytable_qc7_2_Politique <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_2_rec,
   include = OpinionPolitique)
 
@@ -621,6 +633,7 @@ library(gtsummary)
 mytable_qc7_3_SexeAge <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_3_rec,
   include = SexeAge )
 
@@ -635,6 +648,7 @@ library(gtsummary)
 mytable_qc7_3_Educ <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_3_rec,
   include = AgeDiplome)
 
@@ -649,6 +663,7 @@ library(gtsummary)
 mytable_qc7_3_Revenu <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_3_rec,
   include = DifficultéAPayerFactures)
 
@@ -663,6 +678,7 @@ library(gtsummary)
 mytable_qc7_3_Revenu <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_3_rec,
   include = TypeAgglomeration)
 
@@ -678,6 +694,7 @@ library(gtsummary)
 mytable_qc7_3_Politique <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_3_rec,
   include = OpinionPolitique)
 
@@ -697,6 +714,7 @@ library(gtsummary)
 mytable_qc7_4_SexeAge <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_4_rec,
   include = SexeAge )
 
@@ -711,6 +729,7 @@ library(gtsummary)
 mytable_qc7_4_Educ <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_4_rec,
   include = AgeDiplome)
 
@@ -725,6 +744,7 @@ library(gtsummary)
 mytable_qc7_4_Revenu <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_4_rec,
   include = DifficultéAPayerFactures)
 
@@ -739,6 +759,7 @@ library(gtsummary)
 mytable_qc7_4_Revenu <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_4_rec,
   include = TypeAgglomeration)
 
@@ -754,6 +775,7 @@ library(gtsummary)
 mytable_qc7_4_Politique <- tbl_svysummary(
   eurobarometre2019_Wgt, 
   missing = "no",
+  percent = "row",
   by= qc7_4_rec,
   include = OpinionPolitique)
 
