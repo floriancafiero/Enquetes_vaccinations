@@ -5,7 +5,7 @@ date: '2023-05-12'
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 ```
 
 # Importation des bases de données
@@ -105,7 +105,7 @@ Voici une série de vaccinations. Pour chacune d'entre elles : vous paraît-elle
 ```{r recodage diphtérie, echo=FALSE}
 library(questionr)
 library(forcats)## Recoding eurobarometre1989_fr$v1187 into eurobarometre1989_fr$v1187_rec
-eurobarometre1989_fr$v1187_rec <- eurobarometre1989_fr$v1187 %>%
+eurobarometre1989_fr$diphterie_rec <- eurobarometre1989_fr$v1187 %>%
   as.character() %>%
   fct_recode(
     "1" = "2",
@@ -113,7 +113,7 @@ eurobarometre1989_fr$v1187_rec <- eurobarometre1989_fr$v1187 %>%
     "0" = "4"
   )
 ## Recoder eurobarometre1989_fr$v1185 en importanceVaccin_rec
-summary(eurobarometre1989_fr$v1187_rec)
+summary(eurobarometre1989_fr$diphterie_rec)
 ```
 
 #### Tétanos
@@ -198,7 +198,702 @@ summary(eurobarometre1989_fr$polio_rec)
 
 ```
 
+### Sexe 
 
-###
+
+```{r recodage sexe, echo=FALSE}
+library(questionr)
+library(forcats)
+## Recoding eurobarometre1989_fr$v1311 into eurobarometre1989_fr$v1311_rec
+eurobarometre1989_fr$sexe <- eurobarometre1989_fr$v1311 %>%
+  as.character() %>%
+  fct_recode(
+    "Homme" = "1",
+    "Femme" = "2"
+  )
+
+```
+
+### Age
+
+```{r recodage age, echo=FALSE}
+library(questionr)
+library(forcats)
+## Recoding eurobarometre1989_fr$v1312 into eurobarometre1989_fr$age
+eurobarometre1989_fr$age <- eurobarometre1989_fr$v1312 %>%
+    as.character() %>%
+  fct_recode(
+    NULL = "15",
+    NULL = "16",
+    NULL = "17",
+    "18-24" = "18",
+    "18-24" = "19",
+    "18-24" = "20",
+    "18-24" = "21",
+    "18-24" = "22",
+    "18-24" = "23",
+    "18-24" = "24",
+    "25-34" = "25",
+    "25-34" = "26",
+    "25-34" = "27",
+    "25-34" = "28",
+    "25-34" = "29",
+    "25-34" = "30",
+    "25-34" = "31",
+    "25-34" = "32",
+    "25-34" = "33",
+    "25-34" = "34",
+    "35-44" = "35",
+    "35-44" = "36",
+    "35-44" = "37",
+    "35-44" = "38",
+    "35-44" = "39",
+    "35-44" = "40",
+    "35-44" = "41",
+    "35-44" = "42",
+    "35-44" = "43",
+    "35-44" = "44",
+    "45-54" = "45",
+    "45-54" = "46",
+    "45-54" = "47",
+    "45-54" = "48",
+    "45-54" = "49",
+    "45-54" = "50",
+    "45-54" = "51",
+    "45-54" = "52",
+    "45-54" = "53",
+    "45-54" = "54",
+    "55-64" = "55",
+    "55-64" = "56",
+    "55-64" = "57",
+    "55-64" = "58",
+    "55-64" = "59",
+    "55-64" = "60",
+    "55-64" = "61",
+    "55-64" = "62",
+    "55-64" = "63",
+    "55-64" = "64",
+    "65-74" = "65",
+    "65-74" = "66",
+    "65-74" = "67",
+    "65-74" = "68",
+    "65-74" = "69",
+    "65-74" = "70",
+    "65-74" = "71",
+    "65-74" = "72",
+    "65-74" = "73",
+    "65-74" = "74",
+    NULL = "75",
+    NULL = "76",
+    NULL = "77",
+    NULL = "78",
+    NULL = "79",
+    NULL = "80",
+    NULL = "81",
+    NULL = "82",
+    NULL = "83",
+    NULL = "84",
+    NULL = "85",
+    NULL = "86",
+    NULL = "87",
+    NULL = "88",
+    NULL = "89",
+    NULL = "90",
+    NULL = "91",
+    NULL = "92",
+    NULL = "93",
+    NULL = "94"
+  )
+
+```
+
+### Interaction sexe age
+
+```{r recodage sexe age, echo=FALSE}
+library(forcats)
+library(questionr)
+library(dplyr)
+eurobarometre1989_fr$SexeAge <- case_when(
+  eurobarometre1989_fr$age == "18-24" & eurobarometre1989_fr$v1311 == 2 ~ "Femme 18-24 ans",
+  eurobarometre1989_fr$age == "25-34" & eurobarometre1989_fr$v1311 == 2 ~ "Femme 25-34 ans",
+  eurobarometre1989_fr$age == "35-44"& eurobarometre1989_fr$v1311 == 2 ~ "Femme 35-44 ans",
+  eurobarometre1989_fr$age == "45-54" & eurobarometre1989_fr$v1311 == 2 ~ "Femme 45-54 ans",
+  eurobarometre1989_fr$age == "55-64" & eurobarometre1989_fr$v1311 == 2 ~ "Femme 55-64 ans",
+  eurobarometre1989_fr$age ==  "65-75" & eurobarometre1989_fr$v1311 == 2 ~ "Femme 65-75 ans",
+  eurobarometre1989_fr$age == "18-24" & eurobarometre1989_fr$v1311 == 1 ~ "Homme 18-24 ans",
+  eurobarometre1989_fr$age == "25-34" & eurobarometre1989_fr$v1311 == 1 ~ "Homme 25-34 ans",
+  eurobarometre1989_fr$age == "35-44"& eurobarometre1989_fr$v1311 == 1 ~ "Homme 35-44 ans",
+  eurobarometre1989_fr$age == "45-54" & eurobarometre1989_fr$v1311 == 1 ~ "Homme 45-54 ans",
+  eurobarometre1989_fr$age == "55-64" & eurobarometre1989_fr$v1311 == 1 ~ "Homme 55-64 ans",
+  eurobarometre1989_fr$age ==  "65-75" & eurobarometre1989_fr$v1311 == 1 ~ "Homme 65-75 ans",
+)
+eurobarometre1989_fr$SexeAge <- as.factor(eurobarometre1989_fr$SexeAge)
+
+```
+
+### Age à la fin de l'éducation (proxy diplome)
+
+On utilise v1310, recodage de V1309 en modalités adaptées à l'époque.
+
+### Revenu
+
+
+Pour permettre la comparabilité entre les pays, leur différentes monnaies et niveaux de revenu, on utilise un recodage en quartiles déjà calculé par l'enquête: v1317 (1 pour les plus riches, 4 pour les moins riches)
+
+### Politisation
+
+L'axe choisi dans l'Eurobaromètre pose problème, son centre mathématique se situant à "5,5". Plusieurs options de recodage sont possibles A la suite de Nathalie et Touzet (2019),nous recodons l'axe de 1 (le plus à gauche) à 10 (le plus à droite) de la manière suivante:
+Extrême Gauche  = 1-2
+Gauche = 3-4
+Centre= 5-6
+Droite = 7-8,
+Droite radicale = 9-10.
+
+Voir: Nathalie, Cyril, et Hugo Touzet. « La gauche et la droite, un clivage persistant », Pierre Bréchon éd., La France des valeurs. Quarante ans d'évolutions. Presses universitaires de Grenoble, 2019, pp. 265-272.
+
+Les partis politiques posent trop de complexité pour la comparaison entre pays.
+
+```{r Opinion Politique, echo=FALSE}
+library(forcats)
+library(questionr)
+## Recodage de eurobarometre2019$OpinionPolitique en eurobarometre2019$d1_rec
+eurobarometre1989_fr$OpinionPolitique <- eurobarometre1989_fr$v1292 %>%
+  as.character() %>%
+  fct_recode(
+    "Extrême Gauche" = "1",
+    "Extrême Gauche" = "2",
+    "Gauche" = "3",
+    "Gauche" = "4",
+    "Centre" = "5",
+    "Centre" = "6",
+    "Droite" = "7",
+    "Droite" = "8",
+    "Extrême droite" = "9",
+    "Extrême droite" = "10",
+  )
+summary(eurobarometre1989_fr$OpinionPolitique)
+eurobarometre1989_fr$OpinionPolitique <- as.factor(eurobarometre1989_fr$OpinionPolitique)
+
+```
+
+
+## Application des pondérations
+
+On applique les pondérations suggérées par l'eurobaromètre avec le package survey. La pondération W1 de 2019 correspond à la pondération Nation Weight II dans les enquêtes précédents l'Eurobaromètre 31.
+
+```{r pondération données, echo=FALSE}
+library(survey)
+eurobarometre1989_fr_Wgt <- svydesign(ids = ~1, data = eurobarometre1989_fr, weights = ~eurobarometre1989_fr$v6)
+```
+
+
+# Calculs
+
+
+## Statistiques descriptives: variables recodées
+
+### Obligation vaccinale
+
+
+#### Sexe et Age
+
+```{r tri croisé obligationVaccinale sexe age, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_obligationVaccinale_SexeAge <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= obligationVaccinale_rec,
+  include = SexeAge )
+mytable_obligationVaccinale_SexeAge 
+```
+
+#### Age education (proxy diplome)
+
+```{r tri croisé obligationVaccinale age diplome, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_obligationVaccinale_AgeDiplome <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= obligationVaccinale_rec,
+  include = v1310 )
+mytable_obligationVaccinale_AgeDiplome
+```
+
+
+#### Revenu
+
+
+```{r tri croisé obligationVaccinale revenu, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_obligationVaccinale_Revenu <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= obligationVaccinale_rec,
+  include = v1317 )
+mytable_obligationVaccinale_Revenu
+```
+
+#### Politisation
+
+
+```{r tri croisé obligationVaccinale politisation, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_obligationVaccinale_OpinionPolitique <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= obligationVaccinale_rec,
+  include = OpinionPolitique)
+mytable_obligationVaccinale_OpinionPolitique
+```
+
+
+### Importance Vaccin
+
+
+#### Sexe et Age
+
+```{r tri croisé importanceVaccin sexe age, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_importanceVaccin_SexeAge <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= importanceVaccin_rec,
+  include = SexeAge )
+mytable_importanceVaccin_SexeAge 
+```
+
+#### Age education (proxy diplome)
+
+```{r tri croisé importanceVaccin age diplome, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_importanceVaccin_AgeDiplome <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= importanceVaccin_rec,
+  include = v1310 )
+mytable_importanceVaccin_AgeDiplome
+```
+
+
+#### Revenu
+
+
+```{r tri croisé importanceVaccin revenu, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_importanceVaccin_Revenu <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= importanceVaccin_rec,
+  include = v1317 )
+mytable_importanceVaccin_Revenu
+```
+
+#### Politisation
+
+
+```{r tri croisé importanceVaccin politisation, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_importanceVaccin_OpinionPolitique <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= importanceVaccin_rec,
+  include = OpinionPolitique)
+mytable_importanceVaccin_OpinionPolitique
+```
+
+### Diphterie
+
+
+#### Sexe et Age
+
+```{r tri croisé diphterie sexe age, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_diphterie_SexeAge <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= diphterie_rec,
+  include = SexeAge )
+mytable_diphterie_SexeAge 
+```
+
+#### Age education (proxy diplome)
+
+```{r tri croisé diphterie age diplome, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_diphterie_AgeDiplome <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= diphterie_rec,
+  include = v1310 )
+mytable_diphterie_AgeDiplome
+```
+
+
+#### Revenu
+
+
+```{r tri croisé diphterie revenu, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_diphterie_Revenu <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= diphterie_rec,
+  include = v1317 )
+mytable_diphterie_Revenu
+```
+
+#### Politisation
+
+
+```{r tri croisé diphterie politisation, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_diphterie_OpinionPolitique <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= diphterie_rec,
+  include = OpinionPolitique)
+mytable_diphterie_OpinionPolitique
+```
+
+### Tetanos
+
+
+#### Sexe et Age
+
+```{r tri croisé tetanos sexe age, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_tetanos_SexeAge <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= tetanos_rec,
+  include = SexeAge )
+mytable_tetanos_SexeAge 
+```
+
+#### Age education (proxy diplome)
+
+```{r tri croisé tetanos age diplome, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_tetanos_AgeDiplome <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= tetanos_rec,
+  include = v1310 )
+mytable_tetanos_AgeDiplome
+```
+
+
+#### Revenu
+
+
+```{r tri croisé tetanos revenu, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_tetanos_Revenu <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= tetanos_rec,
+  include = v1317 )
+mytable_tetanos_Revenu
+```
+
+#### Politisation
+
+
+```{r tri croisé tetanos politisation, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_tetanos_OpinionPolitique <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= tetanos_rec,
+  include = OpinionPolitique)
+mytable_tetanos_OpinionPolitique
+```
+
+
+### Rubeole
+
+
+#### Sexe et Age
+
+```{r tri croisé rubeole sexe age, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_rubeole_SexeAge <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= rubeole_rec,
+  include = SexeAge )
+mytable_rubeole_SexeAge 
+```
+
+#### Age education (proxy diplome)
+
+```{r tri croisé rubeole age diplome, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_rubeole_AgeDiplome <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= rubeole_rec,
+  include = v1310 )
+mytable_rubeole_AgeDiplome
+```
+
+
+#### Revenu
+
+
+```{r tri croisé rubeole revenu, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_rubeole_Revenu <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= rubeole_rec,
+  include = v1317 )
+mytable_rubeole_Revenu
+```
+
+#### Politisation
+
+
+```{r tri croisé rubeole politisation, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_rubeole_OpinionPolitique <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= rubeole_rec,
+  include = OpinionPolitique)
+mytable_rubeole_OpinionPolitique
+```
+
+
+
+### Rougeole
+
+
+#### Sexe et Age
+
+```{r tri croisé rougeole sexe age, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_rougeole_SexeAge <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= rougeole_rec,
+  include = SexeAge )
+mytable_rougeole_SexeAge 
+```
+
+#### Age education (proxy diplome)
+
+```{r tri croisé rougeole age diplome, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_rougeole_AgeDiplome <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= rougeole_rec,
+  include = v1310 )
+mytable_rougeole_AgeDiplome
+```
+
+
+#### Revenu
+
+
+```{r tri croisé rougeole revenu, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_rougeole_Revenu <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= rougeole_rec,
+  include = v1317 )
+mytable_rougeole_Revenu
+```
+
+#### Politisation
+
+
+```{r tri croisé rougeole politisation, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_rougeole_OpinionPolitique <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= rougeole_rec,
+  include = OpinionPolitique)
+mytable_rougeole_OpinionPolitique
+```
+
+
+### Coqueluche
+
+
+#### Sexe et Age
+
+```{r tri croisé coqueluche sexe age, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_coqueluche_SexeAge <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= coqueluche_rec,
+  include = SexeAge )
+mytable_coqueluche_SexeAge 
+```
+
+#### Age education (proxy diplome)
+
+```{r tri croisé coqueluche age diplome, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_coqueluche_AgeDiplome <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= coqueluche_rec,
+  include = v1310 )
+mytable_coqueluche_AgeDiplome
+```
+
+
+#### Revenu
+
+
+```{r tri croisé coqueluche revenu, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_coqueluche_Revenu <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= coqueluche_rec,
+  include = v1317 )
+mytable_coqueluche_Revenu
+```
+
+#### Politisation
+
+
+```{r tri croisé coqueluche politisation, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_coqueluche_OpinionPolitique <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= coqueluche_rec,
+  include = OpinionPolitique)
+mytable_coqueluche_OpinionPolitique
+```
+
+### Polio
+
+
+#### Sexe et Age
+
+```{r tri croisé polio sexe age, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_polio_SexeAge <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= polio_rec,
+  include = SexeAge )
+mytable_polio_SexeAge 
+```
+
+#### Age education (proxy diplome)
+
+```{r tri croisé polio age diplome, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_polio_AgeDiplome <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= polio_rec,
+  include = v1310 )
+mytable_polio_AgeDiplome
+```
+
+
+#### Revenu
+
+
+```{r tri croisé polio revenu, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_polio_Revenu <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= polio_rec,
+  include = v1317 )
+mytable_polio_Revenu
+```
+
+#### Politisation
+
+
+```{r tri croisé polio politisation, echo=FALSE}
+library(survey)
+library(gtsummary)
+mytable_polio_OpinionPolitique <- tbl_svysummary(
+  eurobarometre1989_fr_Wgt, 
+  missing = "no",
+  percent = "row",
+  by= polio_rec,
+  include = OpinionPolitique)
+mytable_polio_OpinionPolitique
+```
+
+
+
 
 
