@@ -1,0 +1,204 @@
+---
+title: "Eurobarometre 1989"
+output: html_document
+date: '2023-05-12'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Importation des bases de données
+
+v6 pondération
+
+## Conversion stata vers R
+Les bases de données Stata sont importées et converties pour être lues par R. On filtre pour ne travailler tout d'abord que sur la France.
+
+```{r importation données, echo=FALSE}
+setwd('/Users/126862/')
+Sys.setlocale("LC_ALL", "fr_FR.UTF-8")
+library(haven)
+eurobarometre1989 <- read_dta("Downloads/ZA1752_v1-1-0.dta")
+eurobarometre1989_be <- subset(eurobarometre1989, eurobarometre1989$isocntry == "BE")
+eurobarometre1989_de <- subset(eurobarometre1989, eurobarometre1989$isocntry == "DE")
+eurobarometre1989_dk <- subset(eurobarometre1989, eurobarometre1989$isocntry == "DK")
+eurobarometre1989_es <- subset(eurobarometre1989, eurobarometre1989$isocntry == "ES")
+eurobarometre1989_fr <- subset(eurobarometre1989, eurobarometre1989$isocntry == "FR")
+eurobarometre1989_gb <- subset(eurobarometre1989, eurobarometre1989$isocntry == "GB")
+eurobarometre1989_gr <- subset(eurobarometre1989, eurobarometre1989$isocntry == "GR")
+eurobarometre1989_ie <- subset(eurobarometre1989, eurobarometre1989$isocntry == "IE")
+eurobarometre1989_it <- subset(eurobarometre1989, eurobarometre1989$isocntry == "IT")
+eurobarometre1989_lu <- subset(eurobarometre1989, eurobarometre1989$isocntry == "LU")
+eurobarometre1989_nl <- subset(eurobarometre1989, eurobarometre1989$isocntry == "NL")
+eurobarometre1989_pt <- subset(eurobarometre1989, eurobarometre1989$isocntry == "PT")
+```
+
+
+## Recodage des variables
+
+### Obligation vaccinale
+
+Certaines vaccinations sont obligatoires. Cela vous paraît-il ... ?
+
+1 = très important
+2 = assez important
+3 = pas très important
+4 = pas important du tout
+5 = NSP
+
+
+```{r recodage obligation vaccinale, echo=FALSE}
+library(questionr)
+library(forcats)
+## Recoder eurobarometre1989_fr$v1185 en obligationVaccinale_rec
+eurobarometre1989_fr$obligationVaccinale_rec <- eurobarometre1989_fr$v1185 %>%
+  as.character() %>%
+  fct_recode(
+    "1" = "2",
+    "0" = "3",
+    "0" = "4"
+  )
+summary(eurobarometre1989_fr$obligationVaccinale_rec)
+```
+
+(NSP= 0 visiblement)
+
+### Importance de se faire vacciner
+
+Dans quelle mesure est-il à vos yeux important de se faire vacciner de façon régulière ? Est-ce... ?
+
+1 = très important
+2 = assez important
+3 = pas très important
+4 = pas important du tout
+5 = NSP
+
+
+```{r recodage importance des vaccins, echo=FALSE}
+library(questionr)
+library(forcats)
+## Recoder eurobarometre1989_fr$v1185 en importanceVaccin_rec
+eurobarometre1989_fr$importanceVaccin_rec <- eurobarometre1989_fr$v1186 %>%
+  as.character() %>%
+  fct_recode(
+    "1" = "2",
+    "0" = "3",
+    "0" = "4"
+  )
+summary(eurobarometre1989_fr$importanceVaccin_rec)
+```
+
+### Vaccins spécifiques
+
+Voici une série de vaccinations. Pour chacune d'entre elles : vous paraît-elle ... ?
+
+1 = indispensable
+2 = nécessaire
+3 = souhaitable
+4 = pas essentielle
+5 = NSP
+
+#### Diphtérie
+
+
+```{r recodage diphtérie, echo=FALSE}
+library(questionr)
+library(forcats)## Recoding eurobarometre1989_fr$v1187 into eurobarometre1989_fr$v1187_rec
+eurobarometre1989_fr$v1187_rec <- eurobarometre1989_fr$v1187 %>%
+  as.character() %>%
+  fct_recode(
+    "1" = "2",
+    "1" = "3",
+    "0" = "4"
+  )
+## Recoder eurobarometre1989_fr$v1185 en importanceVaccin_rec
+summary(eurobarometre1989_fr$v1187_rec)
+```
+
+#### Tétanos
+
+```{r recodage tétanos, echo=FALSE}
+library(questionr)
+library(forcats)
+## Recoding eurobarometre1989_fr$v1188 into eurobarometre1989_fr$tetanos_rec
+eurobarometre1989_fr$tetanos_rec <- eurobarometre1989_fr$v1188 %>%
+  as.character() %>%
+  fct_recode(
+    "1" = "2",
+    "1" = "3",
+    "0" = "4"
+  )
+summary(eurobarometre1989_fr$tetanos_rec)
+```
+
+#### Rubéole
+
+```{r recodage rubéole, echo=FALSE}
+library(questionr)
+library(forcats)
+## Recoding eurobarometre1989_fr$v1189 into eurobarometre1989_fr$rubeole_rec
+eurobarometre1989_fr$rubeole_rec <- eurobarometre1989_fr$v1189 %>%
+  as.character() %>%
+  fct_recode(
+    "1" = "2",
+    "1" = "3",
+    "0" = "4"
+  )
+summary(eurobarometre1989_fr$rubeole_rec)
+```
+
+#### Rougeole
+
+```{r recodage rougeoles, echo=FALSE}
+library(questionr)
+library(forcats)
+## Recoding eurobarometre1989$v1190 into eurobarometre1989$rougeole_rec
+eurobarometre1989_fr$rougeole_rec <- eurobarometre1989_fr$v1190 %>%
+  as.character() %>%
+  fct_recode(
+    "1" = "2",
+    "1" = "3",
+    "0" = "4"
+  )
+summary(eurobarometre1989_fr$rougeole_rec)
+```
+
+#### Coqueluche
+
+
+```{r recodage coqueluche, echo=FALSE}
+library(questionr)
+library(forcats)
+## Recoding eurobarometre1989_fr$v1191 into eurobarometre1989_fr$coqueluche_rec
+eurobarometre1989_fr$coqueluche_rec <- eurobarometre1989_fr$v1191 %>%
+  as.character() %>%
+  fct_recode(
+    "1" = "2",
+    "1" = "3",
+    "0" = "4"
+  )
+summary(eurobarometre1989_fr$coqueluche_rec)
+```
+
+#### Polio
+
+```{r recodage polio, echo=FALSE}
+library(questionr)
+library(forcats)
+## Recoding eurobarometre1989_fr$v1192 into eurobarometre1989_fr$polio_rec
+eurobarometre1989_fr$polio_rec <- eurobarometre1989_fr$v1192 %>%
+  as.character() %>%
+  fct_recode(
+    "1" = "2",
+    "1" = "3",
+    "0" = "4"
+  )
+summary(eurobarometre1989_fr$polio_rec)
+
+```
+
+
+###
+
+
